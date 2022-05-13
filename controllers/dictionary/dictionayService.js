@@ -2,13 +2,8 @@ const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
 
 const add = (req, res, next) => {
-  const { word, meaning, sld } = req.body || req.body.dictionary;
+  const { word, meaning, sld, file } = req.body || req.body.dictionary;
 
-  const filePath = req.files[0].path;
-
-  var domain = req.headers.host;
-  var pathname = new URL(filePath).pathname;
-  var file = pathname.split("\\").splice(-2).join("/");
   if (!word || !meaning || !sld || !file) {
     return res.send(new BadRequestResponse("Please fill all the fields"));
   }

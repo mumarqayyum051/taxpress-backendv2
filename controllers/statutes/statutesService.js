@@ -2,13 +2,9 @@ const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
 
 const addStatutes = (req, res, next) => {
-  const { law_or_statute, chapter, section, textSearch1, textSearch2 } =
+  const { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
     req.body || req.body.statutes;
-  const filePath = req.files[0].path;
 
-  var domain = req.headers.host;
-  var pathname = new URL(filePath).pathname;
-  var file = pathname.split("\\").splice(-2).join("/");
   if (
     !law_or_statute ||
     !chapter ||

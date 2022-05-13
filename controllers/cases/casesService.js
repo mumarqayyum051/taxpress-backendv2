@@ -2,8 +2,6 @@ const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
 
 const addCase = (req, res, next) => {
-  const filePath = req.files[0].path;
-
   const {
     year_or_vol,
     pageNo,
@@ -22,10 +20,9 @@ const addCase = (req, res, next) => {
     journals,
     appellant_or_opponent,
     principleOfCaseLaws,
+    file,
   } = req.body || req.body.case;
-  var pathname = new URL(filePath).pathname;
-  var serverLink = pathname.split("\\").splice(-2).join("/");
-  console.log({ serverLink, ...req.body });
+
   if (
     !year_or_vol ||
     !pageNo ||
@@ -44,13 +41,13 @@ const addCase = (req, res, next) => {
     !appellant_or_opponent ||
     !principleOfCaseLaws ||
     !journals ||
-    !serverLink
+    !file
   ) {
     return res
       .status(403)
       .send(new BadRequestResponse("Please fill all the fields"));
   }
-  const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute, section, section2, court, caseNo, dated, textSearch1, textSearch2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${textSearch1}', '${textSearch2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${serverLink}')`;
+  const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute, section, section2, court, caseNo, dated, textSearch1, textSearch2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${textSearch1}', '${textSearch2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${file}')`;
 
   db.query(query, (err, result) => {
     if (err) {
@@ -85,10 +82,8 @@ const updateCase = (req, res, next) => {
     journals,
     appellant_or_opponent,
     principleOfCaseLaws,
+    file,
   } = req.body || req.body.case;
-  var pathname = new URL(filePath).pathname;
-  var serverLink = pathname.split("\\").splice(-2).join("/");
-  console.log({ serverLink, ...req.body });
 
   const id = req.params.id;
 
@@ -113,14 +108,14 @@ const updateCase = (req, res, next) => {
     !appellant_or_opponent ||
     !principleOfCaseLaws ||
     !journals ||
-    !serverLink
+    !file
   ) {
     return res
       .status(403)
       .send(new BadRequestResponse("Please fill all the fields"));
   }
 
-  let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute = '${law_or_statute}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${serverLink}' WHERE id = '${id}'`;
+  let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute = '${law_or_statute}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${file}' WHERE id = '${id}'`;
 
   db.query(update, (err, result) => {
     if (err) {

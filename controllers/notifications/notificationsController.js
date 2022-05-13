@@ -11,7 +11,7 @@ const {
   getAllNotifications,
 } = require("./notificationsService");
 
-router.post("/createNotification", cpUpload, createNotification);
+router.post("/createNotification", createNotification);
 
 router.post("/searchNotifications", searchNotifications);
 router.post("/createNotificationType", createNotificationType);

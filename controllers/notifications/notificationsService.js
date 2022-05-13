@@ -3,13 +3,16 @@ const db = require("../../db");
 
 const createNotification = (req, res, next) => {
   const filePath = req.files[0].path;
-  const { notificationTypeId, sroNO, subject, year, dated, law_or_statute_id } =
-    req.body || req.body.notification;
+  const {
+    notificationTypeId,
+    sroNO,
+    subject,
+    year,
+    dated,
+    law_or_statute_id,
+    file,
+  } = req.body || req.body.notification;
 
-  var domain = req.headers.host;
-  var pathname = new URL(filePath).pathname;
-  var serverLink = pathname.split("\\").splice(-2).join("/");
-  const file = domain + "/" + serverLink;
   console.log(req.body);
   if (
     !notificationTypeId ||
@@ -18,14 +21,14 @@ const createNotification = (req, res, next) => {
     !year ||
     !dated ||
     !law_or_statute_id ||
-    !serverLink
+    !file
   ) {
     return res
       .status(403)
       .send(new BadRequestResponse("Please fill all the fields"));
   }
 
-  const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${serverLink}')`;
+  const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${file}')`;
   db.query(query, (err, result) => {
     if (err) {
       return res.send(new BadRequestResponse(err));

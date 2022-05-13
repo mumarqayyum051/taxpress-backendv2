@@ -2,18 +2,13 @@ const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
 
 const createBlog = (req, res, next) => {
-  const { title, paragraph, date } = req.body.blog || req.body;
-  const filePath = req.files[0].path;
-  if (!title || !paragraph || !filePath || !date) {
+  const { title, paragraph, date, image } = req.body.blog || req.body;
+  console.log(req.body);
+  if (!title || !paragraph || !image || !date) {
     return next(new BadRequestResponse("Please fill all the fields", 400));
   }
-
-  var domain = req.headers.host;
-  var pathname = new URL(filePath).pathname;
-  var serverLink = pathname.split("\\").splice(-2).join("/");
-  const image = domain + "/" + serverLink;
-  console.log(serverLink);
-  const query = `INSERT INTO blogs (title, paragraph,date, image) VALUES ('${title}', '${paragraph}','${date}', '${serverLink}')`;
+  console.log("called");
+  const query = `INSERT INTO blogs (title, paragraph,date, image) VALUES ('${title}', '${paragraph}','${date}', '${image}')`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));
@@ -62,19 +57,14 @@ const deleteBlogById = (req, res, next) => {
 
 const editBlogById = (req, res, next) => {
   const { blogId } = req.params;
-  const { title, paragraph } = req.body.blog || req.body;
+  const { title, paragraph, image } = req.body.blog || req.body;
   const filePath = req.files[0].path;
 
-  console.log(title, paragraph, filePath);
-  if (!title || !paragraph || !filePath) {
+  if (!title || !paragraph || !image) {
     return next(new BadRequestResponse("Please fill all the fields", 400));
   }
 
-  var domain = req.headers.host;
-  var pathname = new URL(filePath).pathname;
-  var serverLink = pathname.split("\\").splice(-2).join("/");
-  const image = domain + "/" + serverLink;
-  const query = `UPDATE blogs SET title = '${title}', paragraph = '${paragraph}', image = '${serverLink}' WHERE id = ${blogId}`;
+  const query = `UPDATE blogs SET title = '${title}', paragraph = '${paragraph}', image = '${image}' WHERE id = ${blogId}`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));

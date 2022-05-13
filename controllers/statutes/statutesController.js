@@ -10,7 +10,7 @@ const {
   getStatutesOnly,
 } = require("./statutesService");
 
-router.post("/addStatutes", cpUpload, addStatutes);
+router.post("/addStatutes", addStatutes);
 
 router.post("/searchStatutes", searchStatutes);
 router.get("/getAllStatutes", getAllStatutes);
