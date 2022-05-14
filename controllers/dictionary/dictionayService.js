@@ -51,4 +51,13 @@ const search = (req, res, next) => {
   });
 };
 
-module.exports = { add, search };
+const getAllWords = (req, res, next) => {
+  const query = `Select * from dictionary`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.send(new BadRequestResponse(err.message, 400));
+    }
+    return res.send(new OkResponse(result, 200));
+  });
+};
+module.exports = { add, search, getAllWords };
