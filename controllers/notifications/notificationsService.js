@@ -2,7 +2,6 @@ const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
 
 const createNotification = (req, res, next) => {
-  const filePath = req.files[0].path;
   const {
     notificationTypeId,
     sroNO,
@@ -13,7 +12,6 @@ const createNotification = (req, res, next) => {
     file,
   } = req.body || req.body.notification;
 
-  console.log(req.body);
   if (
     !notificationTypeId ||
     !sroNO ||
