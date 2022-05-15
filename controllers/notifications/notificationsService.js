@@ -1,8 +1,12 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
+var base64 = require("file-base64");
+var base64ToFile = require("base64-to-file");
 
-const createNotification = (req, res, next) => {
-  const {
+const fs = require("fs");
+const path = require("path");
+const createNotification = async (req, res, next) => {
+  let {
     notificationTypeId,
     sroNO,
     subject,
@@ -26,13 +30,26 @@ const createNotification = (req, res, next) => {
       .send(new BadRequestResponse("Please fill all the fields"));
   }
 
-  const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${file}')`;
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.send(new BadRequestResponse(err));
-    }
-    return res.send(new OkResponse("Notification created successfully"));
-  });
+  subject = subject.replace(/'/g, "\\'");
+
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    file,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
+      console.log(filePath);
+      const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
+      db.query(query, (err, result) => {
+        if (err) {
+          return res.send(new BadRequestResponse(err));
+        }
+        return res.send(new OkResponse("Notification created successfully"));
+      });
+    },
+  );
 };
 
 const searchNotifications = (req, res) => {
@@ -82,11 +99,12 @@ const searchNotifications = (req, res) => {
 };
 
 const createNotificationType = (req, res) => {
-  const { notificationCategoryName } = req.body || req.body.notificationType;
+  let { notificationCategoryName } = req.body || req.body.notificationType;
 
   if (!notificationCategoryName) {
     return res.send(new BadRequestResponse("Please fill all the fields"));
   }
+  notificationCategoryName = notificationCategoryName.replace(/'/g, "\\'");
   const query = `INSERT INTO notificationtypes (notificationCategoryName) VALUES ('${notificationCategoryName}')`;
 
   db.query(query, (err, result) => {
@@ -108,12 +126,36 @@ const getNotificationTypes = (req, res) => {
 };
 
 const getAllNotifications = (req, res) => {
-  const query = `SELECT * FROM notifications`;
+  const query = `SELECT notifications.*,statutes.law_or_statute, notificationtypes.notificationCategoryName
+   FROM notifications 
+   LEFT JOIN 
+   statutes ON notifications.law_or_statute_id = statutes.id
+    LEFT JOIN
+    notificationtypes ON notifications.notificationTypeId = notificationtypes.id`;
   db.query(query, (err, result) => {
     if (err) {
       return res.send(new BadRequestResponse(err));
     }
+    if (result.length) {
+      for (let notification of result) {
+        // notification.file = new Buffer(notification.file, "binary").toString(
+        //   "base64",
+        // );
+        notification.dated = new Date(notification.dated).toLocaleDateString();
+      }
+    }
     return res.send(new OkResponse(result));
+  });
+};
+
+const deleteNotificationTypeById = (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM notificationtypes WHERE id = ${id}`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.send(new BadRequestResponse(err));
+    }
+    return res.send(new OkResponse("Notification type deleted successfully"));
   });
 };
 module.exports = {
@@ -122,4 +164,5 @@ module.exports = {
   createNotificationType,
   getNotificationTypes,
   getAllNotifications,
+  deleteNotificationTypeById,
 };

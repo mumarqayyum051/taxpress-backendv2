@@ -91,9 +91,22 @@ const getStatutesOnly = (req, res) => {
     return res.send(new OkResponse(result, 200));
   });
 };
+
+const getStatuteById = (req, res) => {
+  const { id } = req.params;
+  const query = `SELECT law_or_statute FROM statutes WHERE id = ${id}`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.send(new BadRequestResponse(err.message, 400));
+    }
+    return res.send(new OkResponse(result, 200));
+    return res.send(new OkResponse(result[0], 200));
+  });
+};
 module.exports = {
   addStatutes,
   searchStatutes,
   getAllStatutes,
   getStatutesOnly,
+  getStatuteById,
 };

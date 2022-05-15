@@ -8,6 +8,7 @@ const {
   searchStatutes,
   getAllStatutes,
   getStatutesOnly,
+  getStatuteById,
 } = require("./statutesService");
 
 router.post("/addStatutes", addStatutes);
@@ -15,5 +16,6 @@ router.post("/addStatutes", addStatutes);
 router.post("/searchStatutes", searchStatutes);
 router.get("/getAllStatutes", getAllStatutes);
 router.get("/getStatutesOnly", getStatutesOnly);
+router.get("/getStatuteById/:id", getStatuteById);
 
 module.exports = router;

@@ -25,7 +25,7 @@ const getAllBlogs = (req, res, next) => {
     }
     if (result.length) {
       for (const blog of result) {
-        blog.paragraph = blog.paragraph;
+        blog.image = new Buffer(blog.image, "binary").toString("base64");
       }
     }
     console.log(result);
