@@ -1,8 +1,9 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
-
+const path = require("path");
+var base64ToFile = require("base64-to-file");
 const addCase = (req, res, next) => {
-  const {
+  let {
     year_or_vol,
     pageNo,
     month,
@@ -47,18 +48,39 @@ const addCase = (req, res, next) => {
       .status(403)
       .send(new BadRequestResponse("Please fill all the fields"));
   }
-  const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute, section, section2, court, caseNo, dated, textSearch1, textSearch2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${textSearch1}', '${textSearch2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${file}')`;
 
-  db.query(query, (err, result) => {
-    if (err) {
-      console.log(err);
-      return res.status(403).send(new BadRequestResponse(err));
-    } else {
-      return res.send(
-        new OkResponse("Case has been uploaded successfully", 200),
-      );
-    }
-  });
+  section = section.replace(/'/g, "\\'");
+  section2 = section2.replace(/'/g, "\\'");
+  court = court.replace(/'/g, "\\'");
+  caseNo = caseNo.replace(/'/g, "\\'");
+  textSearch1 = textSearch1.replace(/'/g, "\\'");
+  textSearch2 = textSearch2.replace(/'/g, "\\'");
+  phraseSearch = phraseSearch.replace(/'/g, "\\'");
+  judge = judge.replace(/'/g, "\\'");
+  lawyer = lawyer.replace(/'/g, "\\'");
+  appellant_or_opponent = appellant_or_opponent.replace(/'/g, "\\'");
+  principleOfCaseLaws = principleOfCaseLaws.replace(/'/g, "\\'");
+  journals = journals.replace(/'/g, "\\'");
+
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    file,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
+
+      const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute, section, section2, court, caseNo, dated, textSearch1, textSearch2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${textSearch1}', '${textSearch2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${filePath}')`;
+
+      db.query(query, (err, result) => {
+        if (err) {
+          return res.send(new BadRequestResponse(err.message, 400));
+        }
+        return res.send(new OkResponse("Statutes has been created", 200));
+      });
+    },
+  );
 };
 
 const updateCase = (req, res, next) => {
@@ -206,12 +228,13 @@ const searchCase = (req, res) => {
   if (principleOfCaseLaws) {
     query += ` principleOfCaseLaws LIKE '%${principleOfCaseLaws}%'`;
   }
-
   query = query.trim();
+  console.log("___", query);
+  // query = query.trim();
   if (query.includes("OR") && query.endsWith("OR")) {
     query = query.split("OR").slice(0, -1).join(" OR ");
   }
-  console.log(query.includes("LIKE"));
+  // console.log(query.includes("LIKE"));
   if (!query.includes("LIKE")) {
     return res
       .status(422)
@@ -219,7 +242,6 @@ const searchCase = (req, res) => {
         new BadRequestResponse("Please pass at least one search parameter"),
       );
   }
-  console.log("-result---", query);
 
   db.query(query, (err, result) => {
     console.log(result);

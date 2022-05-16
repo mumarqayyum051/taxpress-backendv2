@@ -1,8 +1,10 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
+const path = require("path");
+var base64ToFile = require("base64-to-file");
 
 const addStatutes = (req, res, next) => {
-  const { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
+  let { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
     req.body || req.body.statutes;
 
   if (
@@ -17,15 +19,31 @@ const addStatutes = (req, res, next) => {
       new BadRequestResponse("Please fill all the required fields"),
     );
   }
+  law_or_statute = law_or_statute.replace(/'/g, "\\'");
+  chapter = chapter.replace(/'/g, "\\'");
+  section = section.replace(/'/g, "\\'");
+  textSearch1 = textSearch1.replace(/'/g, "\\'");
+  textSearch2 = textSearch2.replace(/'/g, "\\'");
 
-  const query = `INSERT INTO statutes (law_or_statute, chapter, section, textSearch1, textSearch2, file) VALUES ('${law_or_statute}', '${chapter}', '${section}', '${textSearch1}', '${textSearch2}', '${file}')`;
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    file,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
 
-  db.query(query, (err, result) => {
-    if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
-    }
-    return res.send(new OkResponse("Statutes has been created", 200));
-  });
+      const query = `INSERT INTO statutes (law_or_statute, chapter, section, textSearch1, textSearch2, file) VALUES ('${law_or_statute}', '${chapter}', '${section}', '${textSearch1}', '${textSearch2}', '${filePath}')`;
+
+      db.query(query, (err, result) => {
+        if (err) {
+          return res.send(new BadRequestResponse(err.message, 400));
+        }
+        return res.send(new OkResponse("Statutes has been created", 200));
+      });
+    },
+  );
 };
 
 const searchStatutes = (req, res, next) => {
@@ -100,7 +118,16 @@ const getStatuteById = (req, res) => {
       return res.send(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
-    return res.send(new OkResponse(result[0], 200));
+  });
+};
+const deleteStatute = (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM statutes WHERE id = ${id}`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.send(new BadRequestResponse(err.message, 400));
+    }
+    return res.send(new OkResponse("Statute deleted successfully", 200));
   });
 };
 module.exports = {
@@ -109,4 +136,5 @@ module.exports = {
   getAllStatutes,
   getStatutesOnly,
   getStatuteById,
+  deleteStatute,
 };

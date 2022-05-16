@@ -1,6 +1,5 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
-var base64 = require("file-base64");
 var base64ToFile = require("base64-to-file");
 
 const fs = require("fs");
