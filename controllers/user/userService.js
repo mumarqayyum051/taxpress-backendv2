@@ -1,24 +1,24 @@
-const db = require('../../db');
-const bcrypt = require('bcrypt');
-const passport = require('passport');
-const JWT = require('jsonwebtoken');
-require('../../middlewares/passport')(passport);
+const db = require("../../db");
+const bcrypt = require("bcrypt");
+const passport = require("passport");
+const JWT = require("jsonwebtoken");
+require("../../middlewares/passport")(passport);
 
-require('dotenv').config();
+require("dotenv").config();
 
 let {
   OkResponse,
   BadRequestResponse,
   UnauthorizedResponse,
-} = require('express-http-response');
+} = require("express-http-response");
 const {
   sendEmailOTPVerificationCode,
-} = require('../../utilities/emailService');
+} = require("../../utilities/emailService");
 
 const register = async (req, res, next) => {
   const { username, email, address, password } = req.body.user || req.body;
   if (!username || !email || !address || !password) {
-    return res.send(new BadRequestResponse('Please fill all the fields'));
+    return next(new BadRequestResponse("Please fill all the fields"));
   }
   db.query(
     `SELECT * FROM users WHERE email = '${email}'`,
@@ -26,13 +26,13 @@ const register = async (req, res, next) => {
       if (err) {
         return res
           .status(400)
-          .send(new BadRequestResponse('Something went wrong'));
+          .send(new BadRequestResponse("Something went wrong"));
       }
       console.log(result);
       if (result.length) {
         return res
           .status(400)
-          .send(new BadRequestResponse('User already exists'));
+          .send(new BadRequestResponse("User already exists"));
       }
 
       const { OTP, OTPExpiry } = setOTP();
@@ -45,20 +45,19 @@ const register = async (req, res, next) => {
       db.query(query, (err, result) => {
         if (err) {
           console.log(err);
-          return res
-          .status(400).send(new BadRequestResponse(err));
+          return res.status(400).send(new BadRequestResponse(err));
         } else {
-          return res.send(new OkResponse('User Registered Successfully', 200));
+          return res.send(new OkResponse("User Registered Successfully", 200));
         }
       });
-    }
+    },
   );
 };
 // const register = async (req, res, next) => {
 //   const { username, address, password } = req.body.user || req.body;
 
 //   if (!username || !address || !password) {
-//     return res.send(new BadRequestResponse("Please fill all the fields"));
+//     return next(new BadRequestResponse("Please fill all the fields"));
 //   }
 
 //   const { OTP, OTPExpiry } = setOTP();
@@ -70,32 +69,32 @@ const register = async (req, res, next) => {
 //   db.query(query, (err, result) => {
 //     if (err) {
 //       console.log(err);
-//       return res.send(new BadRequestResponse(err));
+//       return next(new BadRequestResponse(err));
 //     } else {
 //       return res.send(new OkResponse("User Registered Successfully", 200));
 //     }
 //   });
 // };
-const verifyOTP = (req, res) => {
+const verifyOTP = (req, res, next) => {
   const { email, otp } = req.body.user;
   console.log(email, otp);
   const query = `SELECT * FROM users WHERE email = '${email}' AND otp = '${otp}' AND otp_expiry > ${Date.now()}`;
   db.query(query, (err, result) => {
     if (err) {
       console.log(err);
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     if (result.length === 0) {
-      return res.send(new UnauthorizedResponse('Invalid OTP or Expired'));
+      return res.send(new UnauthorizedResponse("Invalid OTP or Expired"));
     }
     if (result.length > 0) {
       const query = `UPDATE users SET otp = '', otp_expiry = '', isEmailVerified = TRUE, isOTPVerified = TRUE WHERE email = '${email}'`;
       db.query(query, (err, result) => {
         if (err) {
           console.log(err);
-          return res.send(new BadRequestResponse(err));
+          return next(new BadRequestResponse(err));
         }
-        return res.send(new OkResponse('OTP Verified'));
+        return res.send(new OkResponse("OTP Verified"));
       });
     }
   });
@@ -103,11 +102,11 @@ const verifyOTP = (req, res) => {
 
 const login = (req, res, next) => {
   passport.authenticate(
-    'local',
+    "local",
     { session: false },
     function (err, user, info) {
       if (err) {
-        res.send(new BadRequestResponse(err));
+        next(new BadRequestResponse(err));
       }
       if (!user) {
         res.send(new UnauthorizedResponse(info.message, 401));
@@ -120,11 +119,11 @@ const login = (req, res, next) => {
         delete user?.isOTPVerified;
         res.send(new OkResponse({ ...user, token: token }, 200));
       }
-    }
+    },
   )(req, res, next);
 };
 
-const adminLogin = (req, res) => {
+const adminLogin = (req, res, next) => {
   const { email, password } = req.body.user || req.body;
   const query = `SELECT * FROM users WHERE email = '${email}'`;
   db.query(query, (err, result) => {
@@ -132,7 +131,7 @@ const adminLogin = (req, res) => {
     console.log(result[0].id);
     if (err) {
       console.log(err);
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     if (result.length === 0) {
       return res.send(new UnauthorizedResponse("User doesn't exist"));
@@ -146,7 +145,7 @@ const adminLogin = (req, res) => {
           console.log(result);
           if (err) {
             console.log(err);
-            return res.send(new BadRequestResponse(err));
+            return next(new BadRequestResponse(err));
           }
           if (_result) {
             const token = generateToken(email, result[0].id);
@@ -155,9 +154,9 @@ const adminLogin = (req, res) => {
           } else {
             res
               .status(401)
-              .send(new UnauthorizedResponse('Invalid Password', 401));
+              .send(new UnauthorizedResponse("Invalid Password", 401));
           }
-        }
+        },
       );
     }
   });
@@ -166,7 +165,7 @@ const setOTP = () => {
   const OTP = Math.floor(1000 + Math.random() * 9000);
   const date = new Date();
   const OTPExpiry = date.setMinutes(
-    date.getMinutes() + +process.env.OTP_EXPIRY_TIME
+    date.getMinutes() + +process.env.OTP_EXPIRY_TIME,
   );
   return { OTP, OTPExpiry };
 };

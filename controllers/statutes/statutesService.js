@@ -38,7 +38,7 @@ const addStatutes = (req, res, next) => {
 
       db.query(query, (err, result) => {
         if (err) {
-          return res.send(new BadRequestResponse(err.message, 400));
+          return next(new BadRequestResponse(err.message, 400));
         }
         return res.send(new OkResponse("Statutes has been created", 200));
       });
@@ -84,7 +84,7 @@ const searchStatutes = (req, res, next) => {
   console.log("-result---", search);
   db.query(search, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
@@ -94,38 +94,38 @@ const getAllStatutes = (req, res, next) => {
   const query = `SELECT * FROM statutes`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
 };
 
-const getStatutesOnly = (req, res) => {
+const getStatutesOnly = (req, res, next) => {
   const query = `SELECT id,law_or_statute FROM statutes`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
 };
 
-const getStatuteById = (req, res) => {
+const getStatuteById = (req, res, next) => {
   const { id } = req.params;
   const query = `SELECT law_or_statute FROM statutes WHERE id = ${id}`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
 };
-const deleteStatute = (req, res) => {
+const deleteStatute = (req, res, next) => {
   const { id } = req.params;
   const query = `DELETE FROM statutes WHERE id = ${id}`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse("Statute deleted successfully", 200));
   });

@@ -43,7 +43,7 @@ const createNotification = async (req, res, next) => {
       const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
       db.query(query, (err, result) => {
         if (err) {
-          return res.send(new BadRequestResponse(err));
+          return next(new BadRequestResponse(err));
         }
         return res.send(new OkResponse("Notification created successfully"));
       });
@@ -51,7 +51,7 @@ const createNotification = async (req, res, next) => {
   );
 };
 
-const searchNotifications = (req, res) => {
+const searchNotifications = (req, res, next) => {
   const { sroNO, year, notificationTypeId, subject, dated, law_or_statute_id } =
     req.body || req.body.notification;
 
@@ -91,40 +91,40 @@ const searchNotifications = (req, res) => {
   console.log("-result---", search);
   db.query(search, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     return res.send(new OkResponse(result));
   });
 };
 
-const createNotificationType = (req, res) => {
+const createNotificationType = (req, res, next) => {
   let { notificationCategoryName } = req.body || req.body.notificationType;
 
   if (!notificationCategoryName) {
-    return res.send(new BadRequestResponse("Please fill all the fields"));
+    return next(new BadRequestResponse("Please fill all the fields"));
   }
   notificationCategoryName = notificationCategoryName.replace(/'/g, "\\'");
   const query = `INSERT INTO notificationtypes (notificationCategoryName) VALUES ('${notificationCategoryName}')`;
 
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     return res.send(new OkResponse("Notification type created successfully"));
   });
 };
 
-const getNotificationTypes = (req, res) => {
+const getNotificationTypes = (req, res, next) => {
   const query = `SELECT * FROM notificationtypes`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     return res.send(new OkResponse(result));
   });
 };
 
-const getAllNotifications = (req, res) => {
+const getAllNotifications = (req, res, next) => {
   const query = `SELECT notifications.*,statutes.law_or_statute, notificationtypes.notificationCategoryName
    FROM notifications 
    LEFT JOIN 
@@ -133,7 +133,7 @@ const getAllNotifications = (req, res) => {
     notificationtypes ON notifications.notificationTypeId = notificationtypes.id`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     if (result.length) {
       for (let notification of result) {
@@ -147,12 +147,12 @@ const getAllNotifications = (req, res) => {
   });
 };
 
-const deleteNotificationTypeById = (req, res) => {
+const deleteNotificationTypeById = (req, res, next) => {
   const { id } = req.params;
   const query = `DELETE FROM notificationtypes WHERE id = ${id}`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err));
+      return next(new BadRequestResponse(err));
     }
     return res.send(new OkResponse("Notification type deleted successfully"));
   });

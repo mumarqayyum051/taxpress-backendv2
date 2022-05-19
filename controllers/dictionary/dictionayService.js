@@ -5,13 +5,13 @@ const add = (req, res, next) => {
   const { word, meaning, sld, file } = req.body || req.body.dictionary;
 
   if (!word || !meaning || !sld || !file) {
-    return res.send(new BadRequestResponse("Please fill all the fields"));
+    return next(new BadRequestResponse("Please fill all the fields"));
   }
   const query = `INSERT INTO dictionary (word, meaning, sld, file) VALUES ('${word}', '${meaning}', '${sld}', '${file}')`;
 
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse("Word has been added to dictionary", 200));
   });
@@ -45,7 +45,7 @@ const search = (req, res, next) => {
   console.log("-result---", search);
   db.query(search, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
@@ -55,7 +55,7 @@ const getAllWords = (req, res, next) => {
   const query = `Select * from dictionary`;
   db.query(query, (err, result) => {
     if (err) {
-      return res.send(new BadRequestResponse(err.message, 400));
+      return next(new BadRequestResponse(err.message, 400));
     }
     return res.send(new OkResponse(result, 200));
   });
