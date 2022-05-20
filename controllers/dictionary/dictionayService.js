@@ -1,20 +1,46 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
+const path = require("path");
+var base64ToFile = require("base64-to-file");
 
 const add = (req, res, next) => {
-  const { word, meaning, sld, file } = req.body || req.body.dictionary;
+  let { word, meaning, sld, file } = req.body || req.body.dictionary;
 
   if (!word || !meaning || !sld || !file) {
     return next(new BadRequestResponse("Please fill all the fields"));
   }
-  const query = `INSERT INTO dictionary (word, meaning, sld, file) VALUES ('${word}', '${meaning}', '${sld}', '${file}')`;
-
-  db.query(query, (err, result) => {
-    if (err) {
-      return next(new BadRequestResponse(err.message, 400));
+  try {
+    if (word) {
+      word = word.replace(/"/g, '\\"');
     }
-    return res.send(new OkResponse("Word has been added to dictionary", 200));
-  });
+    if (meaning) {
+      meaning = meaning.replace(/"/g, '\\"');
+    }
+  } catch (e) {
+    return next(new BadRequestResponse(e, 400));
+  }
+
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    file,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
+
+      const query = `INSERT INTO dictionary (word, meaning, sld, file) VALUES ('${word}', '${meaning}', '${sld}', '${filePath}')`;
+
+      db.query(query, (err, result) => {
+        if (err) {
+          return next(new BadRequestResponse(err.message, 400));
+        }
+        return res.send(
+          new OkResponse("Word has been added to dictionary", 200),
+        );
+      });
+    },
+  );
 };
 
 const search = (req, res, next) => {
