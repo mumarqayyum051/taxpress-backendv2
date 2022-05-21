@@ -19,11 +19,15 @@ const addStatutes = (req, res, next) => {
       new BadRequestResponse("Please fill all the required fields"),
     );
   }
-  law_or_statute = law_or_statute.replace(/'/g, "\\'");
-  chapter = chapter.replace(/'/g, "\\'");
-  section = section.replace(/'/g, "\\'");
-  textSearch1 = textSearch1.replace(/'/g, "\\'");
-  textSearch2 = textSearch2.replace(/'/g, "\\'");
+  try {
+    law_or_statute = law_or_statute.replace(/'/g, "\\'");
+    chapter = chapter.replace(/'/g, "\\'");
+    section = section.replace(/'/g, "\\'");
+    textSearch1 = textSearch1.replace(/'/g, "\\'");
+    textSearch2 = textSearch2.replace(/'/g, "\\'");
+  } catch (e) {
+    return next(new BadRequestResponse(e, 400));
+  }
 
   const _path = path.join(process.cwd(), "public", "uploads/");
   base64ToFile.convert(
@@ -112,7 +116,7 @@ const getStatutesOnly = (req, res, next) => {
 
 const getStatuteById = (req, res, next) => {
   const { id } = req.params;
-  const query = `SELECT law_or_statute FROM statutes WHERE id = ${id}`;
+  const query = `SELECT * FROM statutes WHERE id = ${id}`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));
@@ -130,11 +134,77 @@ const deleteStatute = (req, res, next) => {
     return res.send(new OkResponse("Statute deleted successfully", 200));
   });
 };
+
+const editStatutesById = (req, res, next) => {
+  const { id } = req.params;
+  console.log(id);
+  let { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
+    req.body || req.body.statutes;
+
+  if (
+    !law_or_statute ||
+    !chapter ||
+    !section ||
+    !textSearch1 ||
+    !textSearch2 ||
+    !file
+  ) {
+    return res.send(
+      new BadRequestResponse("Please fill all the required fields"),
+    );
+  }
+
+  try {
+    law_or_statute = law_or_statute.replace(/'/g, "\\'");
+    chapter = chapter.replace(/'/g, "\\'");
+    section = section.replace(/'/g, "\\'");
+    textSearch1 = textSearch1.replace(/'/g, "\\'");
+    textSearch2 = textSearch2.replace(/'/g, "\\'");
+  } catch (e) {
+    return next(new BadRequestResponse(e, 400));
+  }
+
+  if (!file.includes("uploads")) {
+    const _path = path.join(process.cwd(), "public", "uploads/");
+    base64ToFile.convert(
+      file,
+      _path,
+      ["jpg", "jpeg", "png", "pdf"],
+      (_filePath) => {
+        var pathname = new URL(_filePath).pathname;
+        var filePath = pathname.split("\\").splice(-2).join("/");
+
+        let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', file = '${filePath}' WHERE id = ${id}`;
+        db.query(update, (err, result) => {
+          if (err) {
+            return next(new BadRequestResponse(err.message, 400));
+          }
+          return res.send(
+            new OkResponse("Statute has been updated successfully", 200),
+          );
+        });
+      },
+    );
+  } else {
+    let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', file = '${file}' WHERE id = ${id}`;
+
+    db.query(update, (err, result) => {
+      if (err) {
+        return next(new BadRequestResponse(err, 400));
+      } else {
+        return res.send(
+          new OkResponse("Statute has been updated successfully", 200),
+        );
+      }
+    });
+  }
+};
 module.exports = {
   addStatutes,
   searchStatutes,
   getAllStatutes,
   getStatutesOnly,
+  editStatutesById,
   getStatuteById,
   deleteStatute,
 };

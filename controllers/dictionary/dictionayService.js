@@ -11,10 +11,10 @@ const add = (req, res, next) => {
   }
   try {
     if (word) {
-      word = word.replace(/"/g, '\\"');
+      word = word.replace(/'/g, "\\'");
     }
     if (meaning) {
-      meaning = meaning.replace(/"/g, '\\"');
+      meaning = meaning.replace(/'/g, "\\'");
     }
   } catch (e) {
     return next(new BadRequestResponse(e, 400));

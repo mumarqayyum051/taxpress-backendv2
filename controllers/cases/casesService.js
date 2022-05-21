@@ -50,37 +50,37 @@ const addCase = (req, res, next) => {
   }
   try {
     if (section) {
-      section = section.replace(/"/g, '\\"');
+      section = section.replace(/'/g, "\\'");
     }
     if (section2) {
-      section2 = section2.replace(/"/g, '\\"');
+      section2 = section2.replace(/'/g, "\\'");
     }
     if (caseNo) {
-      caseNo = caseNo.replace(/"/g, '\\"');
+      caseNo = caseNo.replace(/'/g, "\\'");
     }
     if (textSearch1) {
-      textSearch1 = textSearch1.replace(/"/g, '\\"');
+      textSearch1 = textSearch1.replace(/'/g, "\\'");
     }
     if (textSearch2) {
-      textSearch2 = textSearch2.replace(/"/g, '\\"');
+      textSearch2 = textSearch2.replace(/'/g, "\\'");
     }
     if (phraseSearch) {
-      phraseSearch = phraseSearch.replace(/"/g, '\\"');
+      phraseSearch = phraseSearch.replace(/'/g, "\\'");
     }
     if (judge) {
-      judge = judge.replace(/"/g, '\\"');
+      judge = judge.replace(/'/g, "\\'");
     }
     if (lawyer) {
-      lawyer = lawyer.replace(/"/g, '\\"');
+      lawyer = lawyer.replace(/'/g, "\\'");
     }
     if (appellant_or_opponent) {
-      appellant_or_opponent = appellant_or_opponent.replace(/"/g, '\\"');
+      appellant_or_opponent = appellant_or_opponent.replace(/'/g, "\\'");
     }
     if (principleOfCaseLaws) {
-      principleOfCaseLaws = principleOfCaseLaws.replace(/"/g, '\\"');
+      principleOfCaseLaws = principleOfCaseLaws.replace(/'/g, "\\'");
     }
     if (journals) {
-      journals = journals.replace(/"/g, '\\"');
+      journals = journals.replace(/'/g, "\\'");
     }
   } catch (e) {
     return next(new BadRequestResponse(e));
@@ -159,37 +159,37 @@ const updateCase = (req, res, next) => {
   }
   try {
     if (section) {
-      section = section.replace(/"/g, '\\"');
+      section = section.replace(/'/g, "\\'");
     }
     if (section2) {
-      section2 = section2.replace(/"/g, '\\"');
+      section2 = section2.replace(/'/g, "\\'");
     }
     if (caseNo) {
-      caseNo = caseNo.replace(/"/g, '\\"');
+      caseNo = caseNo.replace(/'/g, "\\'");
     }
     if (textSearch1) {
-      textSearch1 = textSearch1.replace(/"/g, '\\"');
+      textSearch1 = textSearch1.replace(/'/g, "\\'");
     }
     if (textSearch2) {
-      textSearch2 = textSearch2.replace(/"/g, '\\"');
+      textSearch2 = textSearch2.replace(/'/g, "\\'");
     }
     if (phraseSearch) {
-      phraseSearch = phraseSearch.replace(/"/g, '\\"');
+      phraseSearch = phraseSearch.replace(/'/g, "\\'");
     }
     if (judge) {
-      judge = judge.replace(/"/g, '\\"');
+      judge = judge.replace(/'/g, "\\'");
     }
     if (lawyer) {
-      lawyer = lawyer.replace(/"/g, '\\"');
+      lawyer = lawyer.replace(/'/g, "\\'");
     }
     if (appellant_or_opponent) {
-      appellant_or_opponent = appellant_or_opponent.replace(/"/g, '\\"');
+      appellant_or_opponent = appellant_or_opponent.replace(/'/g, "\\'");
     }
     if (principleOfCaseLaws) {
-      principleOfCaseLaws = principleOfCaseLaws.replace(/"/g, '\\"');
+      principleOfCaseLaws = principleOfCaseLaws.replace(/'/g, "\\'");
     }
     if (journals) {
-      journals = journals.replace(/"/g, '\\"');
+      journals = journals.replace(/'/g, "\\'");
     }
   } catch (err) {
     return next(new BadRequestResponse(err, 400));

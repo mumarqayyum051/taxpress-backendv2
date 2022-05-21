@@ -8,12 +8,13 @@ const {
   searchStatutes,
   getAllStatutes,
   getStatutesOnly,
+  editStatutesById,
   getStatuteById,
   deleteStatute,
 } = require("./statutesService");
 
 router.post("/addStatutes", addStatutes);
-
+router.put("/editStatute/:id", editStatutesById);
 router.post("/searchStatutes", searchStatutes);
 router.get("/getAllStatutes", getAllStatutes);
 router.get("/getStatutesOnly", getStatutesOnly);

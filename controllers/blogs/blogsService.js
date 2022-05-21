@@ -1,20 +1,41 @@
 const { BadRequestResponse, OkResponse } = require("express-http-response");
 const db = require("../../db");
-
+const path = require("path");
+var base64ToFile = require("base64-to-file");
 const createBlog = (req, res, next) => {
-  const { title, paragraph, date, image } = req.body.blog || req.body;
-  console.log(req.body);
-  if (!title || !paragraph || !image || !date) {
+  let { title, paragraph, shortParagraph, date, image } =
+    req.body.blog || req.body;
+
+  if (!title || !paragraph || !image || !shortParagraph || !date) {
     return next(new BadRequestResponse("Please fill all the fields", 400));
   }
-  console.log("called");
-  const query = `INSERT INTO blogs (title, paragraph,date, image) VALUES ('${title}', '${paragraph}','${date}', '${image}')`;
-  db.query(query, (err, result) => {
-    if (err) {
-      return next(new BadRequestResponse(err.message, 400));
-    }
-    return next(new OkResponse("Blog has been published", 200));
-  });
+  try {
+    title = title.replace(/'/g, "\\'");
+    paragraph = paragraph.replace(/'/g, "\\'");
+    shortParagraph = shortParagraph.replace(/'/g, "\\'");
+  } catch (e) {
+    return next(new BadRequestResponse(e, 400));
+  }
+
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    image,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
+      console.log(filePath);
+      const query = `INSERT INTO blogs  (title, shortParagraph, paragraph, date, image) VALUES ('${title}','${shortParagraph}', '${paragraph}', '${date}', '${filePath}')`;
+
+      db.query(query, (err, result) => {
+        if (err) {
+          return next(new BadRequestResponse(err.message, 400));
+        }
+        return res.send(new OkResponse("Blog has been created", 200));
+      });
+    },
+  );
 };
 
 const getAllBlogs = (req, res, next) => {
@@ -23,11 +44,7 @@ const getAllBlogs = (req, res, next) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));
     }
-    if (result.length) {
-      for (const blog of result) {
-        blog.image = new Buffer(blog.image, "binary").toString("base64");
-      }
-    }
+
     console.log(result);
     return next(new OkResponse(result, 200));
   });
