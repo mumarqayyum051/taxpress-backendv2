@@ -1,0 +1,71 @@
+const { BadRequestResponse, OkResponse } = require("express-http-response");
+const db = require("../../db");
+const path = require("path");
+var base64ToFile = require("base64-to-file");
+
+const addOrdinance = (req, res, next) => {
+  let { highlights, type, typeName, file } = req.body || req.body.ordinance;
+  //1: Act, 2: Ordinance, 3: Rule
+  if (!highlights || !type || !typeName || !file) {
+    return next(new BadRequestResponse("Please fill all the fields", 400));
+  }
+
+  try {
+    if (highlights) {
+      highlights = highlights.replace(/'/g, "\\'");
+    }
+    if (typeName) {
+      typeName = typeName.replace(/'/g, "\\'");
+    }
+  } catch (e) {
+    return next(new BadRequestResponse(e, 400));
+  }
+
+  const _path = path.join(process.cwd(), "public", "uploads/");
+  base64ToFile.convert(
+    file,
+    _path,
+    ["jpg", "jpeg", "png", "pdf"],
+    (_filePath) => {
+      var pathname = new URL(_filePath).pathname;
+      var filePath = pathname.split("\\").splice(-2).join("/");
+
+      let query = `Insert into ordinance ( highlights, type, typeName, file ) values('${highlights}', '${type}', '${typeName}', '${filePath}')`;
+
+      let responses = [
+        "",
+        "Ordinance has been added",
+        "Act has been added",
+        "Rule has been added",
+      ];
+      db.query(query, (err, result) => {
+        if (err) {
+          return next(new BadRequestResponse(err.message, 400));
+        }
+        return res.send(new OkResponse(responses[type], 200));
+      });
+    },
+  );
+};
+const deleteOrdinance = (req, res, next) => {
+  const id = req.params.id;
+  const query = `DELETE FROM ordinance WHERE id = ${id}`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return next(new BadRequestResponse(err.message, 400));
+    }
+    return next(new OkResponse("Ordinance has been deleted", 200));
+  });
+};
+
+const getOrdinances = (req, res, next) => {
+  const query = `SELECT * FROM ordinance`;
+  db.query(query, (err, result) => {
+    if (err) {
+      return next(new BadRequestResponse(err.message, 400));
+    }
+    return next(new OkResponse(result, 200));
+  });
+};
+
+module.exports = { getOrdinances, deleteOrdinance, addOrdinance };
