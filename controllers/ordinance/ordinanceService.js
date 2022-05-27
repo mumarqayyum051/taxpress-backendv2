@@ -18,6 +18,7 @@ const addOrdinance = (req, res, next) => {
     return next(new BadRequestResponse(e, 400));
   }
 
+  highlights = JSON.stringify(highlights);
   const _path = path.join(process.cwd(), "public", "uploads/");
   base64ToFile.convert(
     file,
@@ -61,7 +62,12 @@ const getOrdinances = (req, res, next) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));
     }
-
+    if (result.length) {
+      for (const ordinance of result) {
+        let parsed = JSON.parse(ordinance.highlights);
+        ordinance.highlights = parsed;
+      }
+    }
     return next(new OkResponse(result, 200));
   });
 };
