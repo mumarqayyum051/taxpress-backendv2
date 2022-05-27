@@ -61,6 +61,7 @@ const getOrdinances = (req, res, next) => {
     if (err) {
       return next(new BadRequestResponse(err.message, 400));
     }
+
     return next(new OkResponse(result, 200));
   });
 };
