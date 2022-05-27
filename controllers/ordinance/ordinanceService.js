@@ -4,18 +4,15 @@ const path = require("path");
 var base64ToFile = require("base64-to-file");
 
 const addOrdinance = (req, res, next) => {
-  let { highlights, type, typeName, file } = req.body || req.body.ordinance;
+  let { highlights, type, file } = req.body || req.body.ordinance;
   //1: Act, 2: Ordinance, 3: Rule
-  if (!highlights || !type || !typeName || !file) {
+  if (!highlights || !type || !file) {
     return next(new BadRequestResponse("Please fill all the fields", 400));
   }
 
   try {
-    if (highlights) {
-      highlights = highlights.replace(/'/g, "\\'");
-    }
-    if (typeName) {
-      typeName = typeName.replace(/'/g, "\\'");
+    if (type) {
+      type = type.replace(/'/g, "\\'");
     }
   } catch (e) {
     return next(new BadRequestResponse(e, 400));
@@ -30,7 +27,7 @@ const addOrdinance = (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
 
-      let query = `Insert into ordinance ( highlights, type, typeName, file ) values('${highlights}', '${type}', '${typeName}', '${filePath}')`;
+      let query = `Insert into ordinance ( highlights, type, file ) values('${highlights}', '${type}',  '${filePath}')`;
 
       let responses = [
         "",

@@ -32,5 +32,9 @@ app.use(
   "/api/dictionary",
   require("./controllers/dictionary/dictionaryController"),
 );
+app.use(
+  "/api/ordinance",
+  require("./controllers/ordinance/ordinanceController"),
+);
 
 app.use(httpResponse.Middleware);
