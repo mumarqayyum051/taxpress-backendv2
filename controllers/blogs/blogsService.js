@@ -3,16 +3,16 @@ const db = require("../../db");
 const path = require("path");
 var base64ToFile = require("base64-to-file");
 const createBlog = (req, res, next) => {
-  let { title, paragraph, shortParagraph, date, image } =
+  let { title, paragraph, short_paragraph, date, image } =
     req.body.blog || req.body;
 
-  if (!title || !paragraph || !image || !shortParagraph || !date) {
+  if (!title || !paragraph || !image || !short_paragraph || !date) {
     return next(new BadRequestResponse("Please fill all the fields", 400));
   }
   try {
     title = title.replace(/'/g, "\\'");
     paragraph = paragraph.replace(/'/g, "\\'");
-    shortParagraph = shortParagraph.replace(/'/g, "\\'");
+    short_paragraph = short_paragraph.replace(/'/g, "\\'");
   } catch (e) {
     return next(new BadRequestResponse(e, 400));
   }
@@ -26,7 +26,7 @@ const createBlog = (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
       console.log(filePath);
-      const query = `INSERT INTO blogs  (title, shortParagraph, paragraph, date, image) VALUES ('${title}','${shortParagraph}', '${paragraph}', '${date}', '${filePath}')`;
+      const query = `INSERT INTO blogs  (title, short_paragraph, paragraph, date, image) VALUES ('${title}','${short_paragraph}', '${paragraph}', '${date}', '${filePath}')`;
 
       db.query(query, (err, result) => {
         if (err) {

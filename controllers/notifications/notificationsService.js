@@ -7,7 +7,7 @@ const path = require("path");
 const createNotification = async (req, res, next) => {
   let {
     notificationTypeId,
-    sroNO,
+    sro_no,
     subject,
     year,
     dated,
@@ -17,7 +17,7 @@ const createNotification = async (req, res, next) => {
 
   if (
     !notificationTypeId ||
-    !sroNO ||
+    !sro_no ||
     !subject ||
     !year ||
     !dated ||
@@ -40,7 +40,7 @@ const createNotification = async (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
       console.log(filePath);
-      const query = `INSERT INTO notifications (notificationTypeId,sroNO,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sroNO}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
+      const query = `INSERT INTO notifications (notificationTypeId,sro_no,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sro_no}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
       db.query(query, (err, result) => {
         if (err) {
           return next(new BadRequestResponse(err));
@@ -52,13 +52,19 @@ const createNotification = async (req, res, next) => {
 };
 
 const searchNotifications = (req, res, next) => {
-  const { sroNO, year, notificationTypeId, subject, dated, law_or_statute_id } =
-    req.body || req.body.notification;
+  const {
+    sro_no,
+    year,
+    notificationTypeId,
+    subject,
+    dated,
+    law_or_statute_id,
+  } = req.body || req.body.notification;
 
   console.log(req.body);
   let search = `SELECT * FROM notifications WHERE `;
-  if (sroNO) {
-    search += `sroNO LIKE '%${sroNO}%' OR `;
+  if (sro_no) {
+    search += `sro_no LIKE '%${sro_no}%' OR `;
   }
   if (year) {
     search += `year LIKE '%${year}%' OR `;

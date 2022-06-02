@@ -1,7 +1,6 @@
 const { expressjwt } = require("express-jwt");
 const db = require(".././db");
 let secret = process.env.JWT_SECRET;
-let mongoose = require("mongoose");
 const { BadRequestResponse } = require("express-http-response");
 
 let UnauthorizedResponse =
@@ -43,9 +42,9 @@ const admin = (req, res, next) => {
       return res.status(400).send(new BadRequestResponse(err));
     } else {
       if (result.length) {
-          delete result[0].password;
-          delete result[0].type;
-          result[0].token = req.headers.authorization.split(" ")[1];
+        delete result[0].password;
+        delete result[0].type;
+        result[0].token = req.headers.authorization.split(" ")[1];
         req.admin = result[0];
         return next();
       } else {

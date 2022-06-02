@@ -14,7 +14,7 @@ async function seeder() {
       bcrypt.genSalt(saltRounds, function (err, salt) {
         bcrypt.hash("Asdf123", salt, function (err, hash) {
           connection.query(
-            `INSERT INTO users (username, password, email) VALUES ('admin', '${hash}', 'admin@gmail.com')`,
+            `INSERT INTO users (id,username, password, email, user_role) VALUES (1,'admin', '${hash}', 'admin@gmail.com', 'admin')`,
             (err, result) => {
               if (err) reject(err);
               resolve(result);
