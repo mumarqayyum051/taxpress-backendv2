@@ -184,9 +184,16 @@ const hashPassword = async (password) => {
 const generateToken = (email, id) => {
   return JWT.sign({ email, id }, process.env.JWT_SECRET);
 };
+
+const userContext = (req, res, next) => {
+  // console.log(req);
+  res.send(req.user);
+};
+
 module.exports = {
   register,
   verifyOTP,
   login,
   adminLogin,
+  userContext,
 };
