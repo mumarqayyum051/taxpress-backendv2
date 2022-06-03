@@ -4,15 +4,15 @@ const path = require("path");
 var base64ToFile = require("base64-to-file");
 
 const addStatutes = (req, res, next) => {
-  let { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
+  let { law_or_statute, chapter, section, text_search_1, text_search_2, file } =
     req.body || req.body.statutes;
 
   if (
     !law_or_statute ||
     !chapter ||
     !section ||
-    !textSearch1 ||
-    !textSearch2 ||
+    !text_search_1 ||
+    !text_search_2 ||
     !file
   ) {
     return res.send(
@@ -23,8 +23,8 @@ const addStatutes = (req, res, next) => {
     law_or_statute = law_or_statute.replace(/'/g, "\\'");
     chapter = chapter.replace(/'/g, "\\'");
     section = section.replace(/'/g, "\\'");
-    textSearch1 = textSearch1.replace(/'/g, "\\'");
-    textSearch2 = textSearch2.replace(/'/g, "\\'");
+    text_search_1 = text_search_1.replace(/'/g, "\\'");
+    text_search_2 = text_search_2.replace(/'/g, "\\'");
   } catch (e) {
     return next(new BadRequestResponse(e, 400));
   }
@@ -38,7 +38,7 @@ const addStatutes = (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
 
-      const query = `INSERT INTO statutes (law_or_statute, chapter, section, textSearch1, textSearch2, file) VALUES ('${law_or_statute}', '${chapter}', '${section}', '${textSearch1}', '${textSearch2}', '${filePath}')`;
+      const query = `INSERT INTO statutes (law_or_statute, chapter, section, text_search_1, text_search_2, file) VALUES ('${law_or_statute}', '${chapter}', '${section}', '${text_search_1}', '${text_search_2}', '${filePath}')`;
 
       db.query(query, (err, result) => {
         if (err) {
@@ -51,7 +51,7 @@ const addStatutes = (req, res, next) => {
 };
 
 const searchStatutes = (req, res, next) => {
-  const { law_or_statute, chapter, section, textSearch1, textSearch2 } =
+  const { law_or_statute, chapter, section, text_search_1, text_search_2 } =
     req.body || req.body.statutes;
 
   console.log(req.body);
@@ -66,11 +66,11 @@ const searchStatutes = (req, res, next) => {
   if (section) {
     search += `section LIKE '%${section}%' OR `;
   }
-  if (textSearch1) {
-    search += `textSearch1 LIKE '%${textSearch1}%' OR `;
+  if (text_search_1) {
+    search += `text_search_1 LIKE '%${text_search_1}%' OR `;
   }
-  if (textSearch2) {
-    search += `textSearch2 LIKE '%${textSearch2}'`;
+  if (text_search_2) {
+    search += `text_search_2 LIKE '%${text_search_2}'`;
   }
 
   console.log(search);
@@ -138,15 +138,15 @@ const deleteStatute = (req, res, next) => {
 const editStatutesById = (req, res, next) => {
   const { id } = req.params;
   console.log(id);
-  let { law_or_statute, chapter, section, textSearch1, textSearch2, file } =
+  let { law_or_statute, chapter, section, text_search_1, text_search_2, file } =
     req.body || req.body.statutes;
 
   if (
     !law_or_statute ||
     !chapter ||
     !section ||
-    !textSearch1 ||
-    !textSearch2 ||
+    !text_search_1 ||
+    !text_search_2 ||
     !file
   ) {
     return res.send(
@@ -158,8 +158,8 @@ const editStatutesById = (req, res, next) => {
     law_or_statute = law_or_statute.replace(/'/g, "\\'");
     chapter = chapter.replace(/'/g, "\\'");
     section = section.replace(/'/g, "\\'");
-    textSearch1 = textSearch1.replace(/'/g, "\\'");
-    textSearch2 = textSearch2.replace(/'/g, "\\'");
+    text_search_1 = text_search_1.replace(/'/g, "\\'");
+    text_search_2 = text_search_2.replace(/'/g, "\\'");
   } catch (e) {
     return next(new BadRequestResponse(e, 400));
   }
@@ -174,7 +174,7 @@ const editStatutesById = (req, res, next) => {
         var pathname = new URL(_filePath).pathname;
         var filePath = pathname.split("\\").splice(-2).join("/");
 
-        let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', file = '${filePath}' WHERE id = ${id}`;
+        let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', file = '${filePath}' WHERE id = ${id}`;
         db.query(update, (err, result) => {
           if (err) {
             return next(new BadRequestResponse(err.message, 400));
@@ -186,7 +186,7 @@ const editStatutesById = (req, res, next) => {
       },
     );
   } else {
-    let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', textSearch1 = '${textSearch1}', textSearch2 = '${textSearch2}', file = '${file}' WHERE id = ${id}`;
+    let update = `UPDATE statutes SET law_or_statute = '${law_or_statute}', chapter = '${chapter}', section = '${section}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', file = '${file}' WHERE id = ${id}`;
 
     db.query(update, (err, result) => {
       if (err) {

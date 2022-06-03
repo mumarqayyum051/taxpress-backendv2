@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
           .status(400)
           .send(new BadRequestResponse("Something went wrong"));
       }
-      console.log(result);
+
       if (result.length) {
         return res
           .status(400)
@@ -36,15 +36,13 @@ const register = async (req, res, next) => {
       }
 
       const { OTP, OTPExpiry } = setOTP();
-      console.log(OTP, OTPExpiry);
+
       const hashedPassword = await hashPassword(password);
-      console.log(hashedPassword);
 
       const query = `INSERT INTO users (username,email,address, password, OTP, OTPExpiry) VALUES ('${username}', '${email}', '${address}', '${hashedPassword}', '${OTP}', '${OTPExpiry}')`;
 
       db.query(query, (err, result) => {
         if (err) {
-          console.log(err);
           return res.status(400).send(new BadRequestResponse(err));
         } else {
           return res.send(new OkResponse("User Registered Successfully", 200));
@@ -61,14 +59,14 @@ const register = async (req, res, next) => {
 //   }
 
 //   const { OTP, OTPExpiry } = setOTP();
-//   console.log(OTP, OTPExpiry);
+//
 //   const hashedPassword = await hashPassword(password);
-//   console.log(hashedPassword);
+//
 //   const query = `INSERT INTO users (username,address, password, OTP, OTPExpiry) VALUES ('${username}', '${address}', '${hashedPassword}', '${OTP}', '${OTPExpiry}')`;
 
 //   db.query(query, (err, result) => {
 //     if (err) {
-//       console.log(err);
+//
 //       return next(new BadRequestResponse(err));
 //     } else {
 //       return res.send(new OkResponse("User Registered Successfully", 200));
@@ -77,11 +75,10 @@ const register = async (req, res, next) => {
 // };
 const verifyOTP = (req, res, next) => {
   const { email, otp } = req.body.user;
-  console.log(email, otp);
+
   const query = `SELECT * FROM users WHERE email = '${email}' AND otp = '${otp}' AND otp_expiry > ${Date.now()}`;
   db.query(query, (err, result) => {
     if (err) {
-      console.log(err);
       return next(new BadRequestResponse(err));
     }
     if (result.length === 0) {
@@ -91,7 +88,6 @@ const verifyOTP = (req, res, next) => {
       const query = `UPDATE users SET otp = '', otp_expiry = '', isEmailVerified = TRUE, isOTPVerified = TRUE WHERE email = '${email}'`;
       db.query(query, (err, result) => {
         if (err) {
-          console.log(err);
           return next(new BadRequestResponse(err));
         }
         return res.send(new OkResponse("OTP Verified"));
@@ -127,24 +123,20 @@ const adminLogin = (req, res, next) => {
   const { email, password } = req.body.user || req.body;
   const query = `SELECT * FROM users WHERE email = '${email}'`;
   db.query(query, (err, result) => {
-    console.log(result);
-    console.log(result[0].id);
     if (err) {
-      console.log(err);
       return next(new BadRequestResponse(err));
     }
     if (result.length === 0) {
-      return res.send(new UnauthorizedResponse("User doesn't exist"));
+      return res
+        .status(401)
+        .send(new UnauthorizedResponse("User doesn't exist", 401));
     }
     if (result.length > 0) {
-      console.log(password, result[0].password);
       bcrypt.compare(
         password.toString(),
         result[0].password.toString(),
         function (err, _result) {
-          console.log(result);
           if (err) {
-            console.log(err);
             return next(new BadRequestResponse(err));
           }
           if (_result) {
@@ -174,7 +166,7 @@ const hashPassword = async (password) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password.toString(), salt);
-    console.log(hashedPassword);
+
     return hashedPassword;
   } catch (err) {
     return err;
@@ -186,7 +178,7 @@ const generateToken = (email, id) => {
 };
 
 const userContext = (req, res, next) => {
-  // console.log(req);
+  //
   res.send(req.user);
 };
 
