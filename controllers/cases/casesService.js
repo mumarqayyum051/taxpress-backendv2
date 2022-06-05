@@ -7,7 +7,7 @@ const addCase = (req, res, next) => {
     year_or_vol,
     pageNo,
     month,
-    law_or_statute,
+    law_or_statute_id,
     section,
     section2,
     court,
@@ -28,7 +28,7 @@ const addCase = (req, res, next) => {
     !year_or_vol ||
     !pageNo ||
     !month ||
-    !law_or_statute ||
+    !law_or_statute_id ||
     !section ||
     !section2 ||
     !court ||
@@ -94,7 +94,7 @@ const addCase = (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
 
-      const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute, section, section2, court, caseNo, dated, text_search_1, text_search_2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${text_search_1}', '${text_search_2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${filePath}')`;
+      const query = `INSERT INTO cases ( year_or_vol, pageNo, month, law_or_statute_id, section, section2, court, caseNo, dated, text_search_1, text_search_2, phraseSearch, judge, lawyer, appellant_or_opponent, principleOfCaseLaws,journals, file) VALUES ('${year_or_vol}', '${pageNo}', '${month}', '${law_or_statute_id}', '${section}', '${section2}', '${court}', '${caseNo}', '${dated}', '${text_search_1}', '${text_search_2}', '${phraseSearch}', '${judge}', '${lawyer}', '${appellant_or_opponent}', '${principleOfCaseLaws}', '${journals}', '${filePath}')`;
       console.log(query);
       db.query(query, (err, result) => {
         if (err) {
@@ -111,7 +111,7 @@ const updateCase = (req, res, next) => {
     year_or_vol,
     pageNo,
     month,
-    law_or_statute,
+    law_or_statute_id,
     section,
     section2,
     court,
@@ -137,7 +137,7 @@ const updateCase = (req, res, next) => {
     !year_or_vol ||
     !pageNo ||
     !month ||
-    !law_or_statute ||
+    !law_or_statute_id ||
     !section ||
     !section2 ||
     !court ||
@@ -204,7 +204,7 @@ const updateCase = (req, res, next) => {
         var pathname = new URL(_filePath).pathname;
         var filePath = pathname.split("\\").splice(-2).join("/");
 
-        let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute = '${law_or_statute}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${filePath}' WHERE id = '${id}'`;
+        let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute_id = '${law_or_statute_id}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${filePath}' WHERE id = '${id}'`;
         console.log(update);
         db.query(update, (err, result) => {
           if (err) {
@@ -217,7 +217,7 @@ const updateCase = (req, res, next) => {
       },
     );
   } else {
-    let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute = '${law_or_statute}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${file}' WHERE id = '${id}'`;
+    let update = `UPDATE cases SET year_or_vol = '${year_or_vol}', pageNo = '${pageNo}', month = '${month}', law_or_statute_id = '${law_or_statute_id}', section = '${section}', section2 = '${section2}', court = '${court}', caseNo = '${caseNo}', dated = '${dated}', text_search_1 = '${text_search_1}', text_search_2 = '${text_search_2}', phraseSearch = '${phraseSearch}', judge = '${judge}', lawyer = '${lawyer}', appellant_or_opponent = '${appellant_or_opponent}', principleOfCaseLaws = '${principleOfCaseLaws}', journals = '${journals}', file = '${file}' WHERE id = '${id}'`;
 
     db.query(update, (err, result) => {
       if (err) {
@@ -235,7 +235,7 @@ const searchCase = (req, res, next) => {
     year_or_vol,
     pageNo,
     month,
-    law_or_statute,
+    law_or_statute_id,
     section,
     section2,
     court,
@@ -265,8 +265,8 @@ const searchCase = (req, res, next) => {
   if (month) {
     query += ` month LIKE'%${month}%' OR`;
   }
-  if (law_or_statute) {
-    query += ` law_or_statute LIKE '%${law_or_statute}%' OR`;
+  if (law_or_statute_id) {
+    query += ` law_or_statute_id LIKE '%${law_or_statute_id}%' OR`;
   }
   if (section) {
     query += ` section LIKE'%${section}%' OR`;

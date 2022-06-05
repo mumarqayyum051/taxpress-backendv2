@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const createNotification = async (req, res, next) => {
   let {
-    notificationTypeId,
+    notification_type_id,
     sro_no,
     subject,
     year,
@@ -16,7 +16,7 @@ const createNotification = async (req, res, next) => {
   } = req.body || req.body.notification;
 
   if (
-    !notificationTypeId ||
+    !notification_type_id ||
     !sro_no ||
     !subject ||
     !year ||
@@ -40,7 +40,7 @@ const createNotification = async (req, res, next) => {
       var pathname = new URL(_filePath).pathname;
       var filePath = pathname.split("\\").splice(-2).join("/");
       console.log(filePath);
-      const query = `INSERT INTO notifications (notificationTypeId,sro_no,subject,year,dated,law_or_statute_id,file) VALUES ('${notificationTypeId}', '${sro_no}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
+      const query = `INSERT INTO notifications (notification_type_id,sro_no,subject,year,dated,law_or_statute_id,file) VALUES ('${notification_type_id}', '${sro_no}', '${subject}','${year}',  '${dated}', '${law_or_statute_id}','${filePath}')`;
       db.query(query, (err, result) => {
         if (err) {
           return next(new BadRequestResponse(err));
@@ -55,7 +55,7 @@ const searchNotifications = (req, res, next) => {
   const {
     sro_no,
     year,
-    notificationTypeId,
+    notification_type_id,
     subject,
     dated,
     law_or_statute_id,
@@ -69,8 +69,8 @@ const searchNotifications = (req, res, next) => {
   if (year) {
     search += `year LIKE '%${year}%' OR `;
   }
-  if (notificationTypeId) {
-    search += `notificationTypeId LIKE '%${notificationTypeId}%' OR `;
+  if (notification_type_id) {
+    search += `notification_type_id LIKE '%${notification_type_id}%' OR `;
   }
   if (subject) {
     search += `subject LIKE '%${subject}%' OR `;
@@ -104,13 +104,13 @@ const searchNotifications = (req, res, next) => {
 };
 
 const createNotificationType = (req, res, next) => {
-  let { notificationCategoryName } = req.body || req.body.notificationType;
+  let { title } = req.body || req.body.notificationType;
 
-  if (!notificationCategoryName) {
+  if (!title) {
     return next(new BadRequestResponse("Please fill all the fields"));
   }
-  notificationCategoryName = notificationCategoryName.replace(/'/g, "\\'");
-  const query = `INSERT INTO notificationtypes (notificationCategoryName) VALUES ('${notificationCategoryName}')`;
+  title = title.replace(/'/g, "\\'");
+  const query = `INSERT INTO notificationstypes (title) VALUES ('${title}')`;
 
   db.query(query, (err, result) => {
     if (err) {
@@ -121,7 +121,7 @@ const createNotificationType = (req, res, next) => {
 };
 
 const getNotificationTypes = (req, res, next) => {
-  const query = `SELECT * FROM notificationtypes`;
+  const query = `SELECT * FROM notificationstypes`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err));
@@ -131,12 +131,12 @@ const getNotificationTypes = (req, res, next) => {
 };
 
 const getAllNotifications = (req, res, next) => {
-  const query = `SELECT notifications.*,statutes.law_or_statute, notificationtypes.notificationCategoryName
+  const query = `SELECT notifications.*,statutes.law_or_statute, notificationstypes.title
    FROM notifications 
    LEFT JOIN 
    statutes ON notifications.law_or_statute_id = statutes.id
     LEFT JOIN
-    notificationtypes ON notifications.notificationTypeId = notificationtypes.id`;
+    notificationstypes ON notifications.notification_type_id = notificationstypes.id`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err));
@@ -155,7 +155,7 @@ const getAllNotifications = (req, res, next) => {
 
 const deleteNotificationTypeById = (req, res, next) => {
   const { id } = req.params;
-  const query = `DELETE FROM notificationtypes WHERE id = ${id}`;
+  const query = `DELETE FROM notificationstypes WHERE id = ${id}`;
   db.query(query, (err, result) => {
     if (err) {
       return next(new BadRequestResponse(err));

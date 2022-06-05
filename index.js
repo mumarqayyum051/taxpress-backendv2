@@ -36,5 +36,6 @@ app.use(
   "/api/ordinance",
   require("./controllers/ordinance/ordinanceController"),
 );
+app.use("/api/team", require("./controllers/team/teamController"));
 
 app.use(httpResponse.Middleware);
