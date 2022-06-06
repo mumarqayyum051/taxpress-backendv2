@@ -10,6 +10,7 @@ const cors = require("cors");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: "200mb" }));
 app.use(cors());
+app.use(require("morgan")("dev"));
 
 app.listen(port, () => {
   console.log(`${process.env.SERVER_STARTED_TEXT} ${port}`);

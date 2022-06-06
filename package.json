@@ -28,11 +28,14 @@
     "lodash.escaperegexp": "^4.1.2",
     "mongoose": "^6.3.0",
     "mongoose-paginate-v2": "^1.6.3",
+    "morgan": "^1.10.0",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",
+    "mysql-ssh2": "^1.0.1",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "tunnel-ssh": "^4.1.6"
   }
 }
