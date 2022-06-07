@@ -902,6 +902,13 @@
   dependencies:
     "safer-buffer" ">= 2.1.2 < 3"
 
+"iconv-lite@^0.6.3":
+  "integrity" "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw=="
+  "resolved" "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz"
+  "version" "0.6.3"
+  dependencies:
+    "safer-buffer" ">= 2.1.2 < 3.0.0"
+
 "iconv-lite@0.4.24":
   "integrity" "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA=="
   "resolved" "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz"
@@ -1414,6 +1421,20 @@
     "seq-queue" "^0.0.5"
     "sqlstring" "^2.3.1"
 
+"mysql2@^2.3.3":
+  "integrity" "sha512-wxJUev6LgMSgACDkb/InIFxDprRa6T95+VEoR+xPvtngtccNH2dGjEB/fVZ8yg1gWv1510c9CvXuJHi5zUm0ZA=="
+  "resolved" "https://registry.npmjs.org/mysql2/-/mysql2-2.3.3.tgz"
+  "version" "2.3.3"
+  dependencies:
+    "denque" "^2.0.1"
+    "generate-function" "^2.3.1"
+    "iconv-lite" "^0.6.3"
+    "long" "^4.0.0"
+    "lru-cache" "^6.0.0"
+    "named-placeholders" "^1.1.2"
+    "seq-queue" "^0.0.5"
+    "sqlstring" "^2.3.2"
+
 "named-placeholders@^1.1.2":
   "integrity" "sha512-wiFWqxoLL3PGVReSZpjLVxyJ1bRqe+KKJVbr4hGs1KWfTZTQyezHFBbuKj9hsizHyGV2ne7EMjHdxEGAybD5SA=="
   "resolved" "https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.2.tgz"
@@ -1758,7 +1779,7 @@
   "resolved" "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz"
   "version" "5.1.2"
 
-"safer-buffer@>= 2.1.2 < 3", "safer-buffer@~2.1.0":
+"safer-buffer@>= 2.1.2 < 3", "safer-buffer@>= 2.1.2 < 3.0.0", "safer-buffer@~2.1.0":
   "integrity" "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="
   "resolved" "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
   "version" "2.1.2"
@@ -1892,6 +1913,11 @@
   "integrity" "sha1-R1OT/56RR5rqYtyvDKPRSYOn+0A="
   "resolved" "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.1.tgz"
   "version" "2.3.1"
+
+"sqlstring@^2.3.2":
+  "integrity" "sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg=="
+  "resolved" "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.3.tgz"
+  "version" "2.3.3"
 
 "ssh2-streams@~0.1.18":
   "integrity" "sha1-URGNFUVV31Rp7h9n4M8efoosDjo="
