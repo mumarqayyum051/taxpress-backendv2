@@ -12,6 +12,9 @@ app.use(express.json({ limit: "200mb" }));
 app.use(cors());
 app.use(require("morgan")("dev"));
 
+app.use("/helloworld", (req, res, next) => {
+  res.send("Hello World");
+});
 app.listen(port, () => {
   console.log(`${process.env.SERVER_STARTED_TEXT} ${port}`);
 });
